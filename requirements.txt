@@ -1,0 +1,11 @@
+streamlit
+openai
+requests
+beautifulsoup4
+python-docx
+fpdf2
+pypdf2
+python-dotenv
+chardet
+langchain
+chromadb  # Optional
