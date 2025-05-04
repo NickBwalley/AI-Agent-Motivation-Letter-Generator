@@ -14,7 +14,7 @@ if langsmith_key:
 st.set_page_config(page_title="AI Motivation Letter Generator", layout="centered")
 
 st.title("✉️ AI-Powered Motivation Letter Generator")
-st.markdown("Generates a high-quality, personalized motivation letter with ease based on your CV and the job description / website URL.")
+st.markdown(" Hello friend... 👋🏾 I will help you generate a high-quality, personalized motivation letter with ease based on the job description / website URL you give and additionally your CV if you have one.")
 
 # Sidebar: Only API key
 with st.sidebar:
@@ -22,19 +22,15 @@ with st.sidebar:
     api_key = st.text_input("OpenAI API Key", type="password")
 
 # Main content: Inputs
-st.header("📋 Input Details")
 description = st.text_area(
     "Brief Description of the Role you are applying for",
-    placeholder="""Please provide:
-1. A detailed description of the role you're applying for
-2. The company website URL or job posting URL (optional)
-3. Any specific requirements or qualifications you would like to include in the letter
-4. Why you're interested in this position (optional)
+    placeholder="""To generate a high-quality motivation letter, please provide:
+1. A detailed description of the role you're applying for,
+2. The company website URL or job posting URL (optional),
+3. Any specific requirements or qualifications you would like to include in the letter,
+4. Why you're interested in this position (optional),
 
-Example:
-Data Scientist position at XYZ Company (https://xyz.com/careers)
-The role requires 3+ years of experience in machine learning and Python.
-I'm particularly interested in their AI-driven approach to solving real-world problems.""",
+""",
     height=200
 )
 
@@ -112,6 +108,9 @@ if st.session_state.letter:
     with st.spinner("⬇️ Preparing downloads..."):
         download_generator.generate_buttons(st.session_state.letter)
 
-    # Optional: ChromaDB storage
-    # if st.button("💾 Save to ChromaDB"):
-    #     chroma_storage.save(context, st.session_state.letter)
+# Footer
+st.markdown("---")  # Add a horizontal line
+st.markdown(
+    '<div style="text-align: center; color: gray;">Powered by NickBiiyAI ❤️ May 4, 2025 😊</div>',
+    unsafe_allow_html=True
+)
