@@ -23,3 +23,13 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+## Screenshot of the outputs
+
+![screenshot_1](assets/output1.png)
+![screenshot_3](assets/output3.png)
+![screenshot_2](assets/output2.png)
+![screenshot_4](assets/output4.png)
+![screenshot_5](assets/output5.png)
+![screenshot_6](assets/output6.png)
+![screenshot_7](assets/output7.png)
