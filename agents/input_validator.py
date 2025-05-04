@@ -6,7 +6,7 @@ def validate(api_key, title, description, url, cv_file):
 
     user_data = {
         "api_key": api_key,
-        "title": title.strip(),
+        "title": "",  # Title is not used in the current version
         "description": description.strip(),
         "url": url.strip() if url else "",
         "cv_file": cv_file

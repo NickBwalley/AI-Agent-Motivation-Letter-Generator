@@ -1,11 +1,20 @@
 import streamlit as st
 from agents import input_validator, web_scraper, document_parser, synthesizer, letter_generator, output_formatter, download_generator
+import os
+import time
+
 # Optional: from agents import chroma_storage
+## Langsmith Tracking (Optional)
+langsmith_key = os.getenv("LANGSMITH_API_KEY")
+if langsmith_key:
+    os.environ["LANGSMITH_API_KEY"] = langsmith_key
+    os.environ["LANGCHAIN_TRACING_V2"] = "true"
+    os.environ["LANGCHAIN_PROJECT"] = "AI Motivation Letter Generator"
 
 st.set_page_config(page_title="AI Motivation Letter Generator", layout="centered")
 
 st.title("✉️ AI-Powered Motivation Letter Generator")
-st.markdown("Generate a high-quality, personalized motivation letter with ease.")
+st.markdown("Generates a high-quality, personalized motivation letter with ease based on your CV and the job description / website URL.")
 
 # Sidebar: Only API key
 with st.sidebar:
@@ -14,16 +23,53 @@ with st.sidebar:
 
 # Main content: Inputs
 st.header("📋 Input Details")
-title = st.text_input("Motivation Letter Title", placeholder="e.g., Application for Data Scientist at XYZ")
-description = st.text_area("Job Description / Key Points", height=200)
-url = st.text_input("Optional URL (e.g., job posting or company page)")
-cv_file = st.file_uploader("Upload your CV or Résumé (.pdf or .docx)", type=["pdf", "docx"])
+description = st.text_area(
+    "Brief Description of the Role you are applying for",
+    placeholder="""Please provide:
+1. A detailed description of the role you're applying for
+2. The company website URL or job posting URL (optional)
+3. Any specific requirements or qualifications you would like to include in the letter
+4. Why you're interested in this position (optional)
 
+Example:
+Data Scientist position at XYZ Company (https://xyz.com/careers)
+The role requires 3+ years of experience in machine learning and Python.
+I'm particularly interested in their AI-driven approach to solving real-world problems.""",
+    height=200
+)
+
+cv_file = st.file_uploader("Upload your CV or Résumé (.pdf or .docx) (optional)", type=["pdf", "docx"]) 
+
+# Initialize session state
+if "letter" not in st.session_state:
+    st.session_state.letter = None
+if "formatted" not in st.session_state:
+    st.session_state.formatted = None
+if "processing_time" not in st.session_state:
+    st.session_state.processing_time = None
+
+# Generate button
 generate_btn = st.button("🚀 Generate Motivation Letter")
 
 if generate_btn:
+    if not description.strip():
+        st.warning("⚠️ Please provide a description of the role and company information before generating.")
+        st.stop()
+
+    start_time = time.time()
+
     with st.spinner("🔍 Validating input..."):
-        valid_input, error, user_data = input_validator.validate(api_key, title, description, url, cv_file)
+        # Extract URL from description if present
+        url = ""
+        if "http" in description.lower():
+            # Simple URL extraction - you might want to use a more robust method
+            words = description.split()
+            for word in words:
+                if word.startswith(("http://", "https://")):
+                    url = word
+                    break
+
+        valid_input, error, user_data = input_validator.validate(api_key, "", description, url, cv_file)
         if not valid_input:
             st.error(error)
             st.stop()
@@ -45,11 +91,27 @@ if generate_btn:
 
     with st.spinner("📄 Formatting output..."):
         formatted = output_formatter.format(letter)
-        st.markdown(formatted, unsafe_allow_html=True)
+
+    # Calculate processing time
+    processing_time = time.time() - start_time
+    st.session_state.processing_time = processing_time
+
+    # Store in session_state
+    st.session_state.letter = letter
+    st.session_state.formatted = formatted
+
+# Display output if available
+if st.session_state.letter:
+    st.header("📝 Generated Motivation Letter")
+    st.markdown(st.session_state.formatted, unsafe_allow_html=True)
+    
+    # Display processing time
+    if st.session_state.processing_time:
+        st.info(f"⏱️ Processing time: {st.session_state.processing_time:.2f} seconds")
 
     with st.spinner("⬇️ Preparing downloads..."):
-        download_generator.generate_buttons(letter)
+        download_generator.generate_buttons(st.session_state.letter)
 
-    # Optional save
+    # Optional: ChromaDB storage
     # if st.button("💾 Save to ChromaDB"):
-    #     chroma_storage.save(context, letter)
+    #     chroma_storage.save(context, st.session_state.letter)
