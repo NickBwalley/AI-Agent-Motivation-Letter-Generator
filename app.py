@@ -13,13 +13,13 @@ if langsmith_key:
 
 st.set_page_config(page_title="AI Motivation Letter Generator", layout="centered")
 
-st.title("✉️ AI-Powered Motivation Letter Generator")
+st.title("✉️ AI-Agent Motivation Letter Generator")
 st.markdown(" Hello friend... 👋🏾 I will help you generate a high-quality, personalized motivation letter with ease based on the job description / website URL you give and additionally your CV if you have one.")
 
 # Sidebar: Only API key
 with st.sidebar:
     st.header("🔐 API Key")
-    api_key = st.text_input("OpenAI API Key", type="password")
+    api_key = st.text_input("OpenAI / Claude / Gemini API Key", type="password")
 
 # Main content: Inputs
 description = st.text_area(
